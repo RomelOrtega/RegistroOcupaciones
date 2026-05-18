@@ -8,40 +8,77 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import edu.ucne.registroocupaciones.data.database.OcupacionDb
+import edu.ucne.registroocupaciones.data.local.dao.EmpleadoDao
 import edu.ucne.registroocupaciones.data.local.dao.OcupacionDao
+import edu.ucne.registroocupaciones.data.repository.EmpleadoRepositoryImpl
 import edu.ucne.registroocupaciones.data.repository.OcupacionRepositoryImpl
+import edu.ucne.registroocupaciones.domain.Empleado.repository.EmpleadoRepository
 import edu.ucne.registroocupaciones.domain.Ocupaciones.repository.OcupacionRepository
-import jakarta.inject.Singleton
+import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 object AppModule {
 
     @Provides
     @Singleton
-    fun provideOcupacionDb(@ApplicationContext appContext: Context): OcupacionDb {
+    fun provideOcupacionDb(
+        @ApplicationContext appContext: Context
+    ): OcupacionDb {
         return Room.databaseBuilder(
             appContext,
             OcupacionDb::class.java,
             "OcupacionDb"
-        ).fallbackToDestructiveMigration(false)
+        )
+            .fallbackToDestructiveMigration()
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideOcupacionDao(ocupacionDb: OcupacionDb): OcupacionDao {
+    fun provideOcupacionDao(
+        ocupacionDb: OcupacionDb
+    ): OcupacionDao {
         return ocupacionDb.ocupacionDao()
     }
+
     @Provides
     @Singleton
-    fun provideOcupacionRepositoryImpl(ocupacionDao: OcupacionDao): OcupacionRepositoryImpl {
+    fun provideEmpleadoDao(
+        ocupacionDb: OcupacionDb
+    ): EmpleadoDao {
+        return ocupacionDb.empleadoDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOcupacionRepositoryImpl(
+        ocupacionDao: OcupacionDao
+    ): OcupacionRepositoryImpl {
         return OcupacionRepositoryImpl(ocupacionDao)
     }
 
     @Provides
     @Singleton
-    fun provideOcupacionRepository(impl: OcupacionRepositoryImpl): OcupacionRepository {
+    fun provideOcupacionRepository(
+        impl: OcupacionRepositoryImpl
+    ): OcupacionRepository {
+        return impl
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmpleadoRepositoryImpl(
+        empleadoDao: EmpleadoDao
+    ): EmpleadoRepositoryImpl {
+        return EmpleadoRepositoryImpl(empleadoDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmpleadoRepository(
+        impl: EmpleadoRepositoryImpl
+    ): EmpleadoRepository {
         return impl
     }
 }

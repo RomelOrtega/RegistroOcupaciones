@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
@@ -68,6 +69,15 @@ fun DrawerMenu(
                             isSelected = selectedItem.value == "Ocupaciones"
                         ) {
                             handleItemClick(Screen.OcupacionList, "Ocupaciones")
+                        }
+                    }
+                    item {
+                        DrawerItem(
+                            title = "Empleados",
+                            icon = Icons.Filled.People,
+                            isSelected = selectedItem.value == "Empleados"
+                        ) {
+                            handleItemClick(Screen.EmpleadoList, "Empleados")
                         }
                     }
                 }
