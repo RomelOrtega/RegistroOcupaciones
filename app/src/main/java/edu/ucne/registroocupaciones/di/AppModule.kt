@@ -14,6 +14,9 @@ import edu.ucne.registroocupaciones.data.repository.EmpleadoRepositoryImpl
 import edu.ucne.registroocupaciones.data.repository.OcupacionRepositoryImpl
 import edu.ucne.registroocupaciones.domain.Empleado.repository.EmpleadoRepository
 import edu.ucne.registroocupaciones.domain.Ocupaciones.repository.OcupacionRepository
+import edu.ucne.registroocupaciones.data.repository.HoraExtraRepositoryImpl
+import edu.ucne.registroocupaciones.data.local.dao.HoraExtraDao
+import edu.ucne.registroocupaciones.domain.horaextra.repository.HoraExtraRepository
 import javax.inject.Singleton
 
 @Module
@@ -79,6 +82,23 @@ object AppModule {
     fun provideEmpleadoRepository(
         impl: EmpleadoRepositoryImpl
     ): EmpleadoRepository {
+        return impl
+    }
+    @Provides
+    @Singleton
+    fun provideHoraExtraDao(ocupacionDb: OcupacionDb): HoraExtraDao {
+        return ocupacionDb.horaExtraDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHoraExtraRepositoryImpl(horaExtraDao: HoraExtraDao): HoraExtraRepositoryImpl {
+        return HoraExtraRepositoryImpl(horaExtraDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHoraExtraRepository(impl: HoraExtraRepositoryImpl): HoraExtraRepository {
         return impl
     }
 }

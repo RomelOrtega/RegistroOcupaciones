@@ -1,5 +1,6 @@
 package edu.ucne.registroocupaciones.presentation.navigation
 
+import android.adservices.adid.AdId
 import kotlinx.serialization.Serializable
 
 sealed class Screen {
@@ -13,4 +14,8 @@ sealed class Screen {
 
     @Serializable
     data class Empleado(val empleadoId: Int) : Screen()
+    @Serializable
+    data object HoraExtraList : Screen()
+    @Serializable
+    data class HoraExtra(val horaExtraId: Int): Screen()
 }
