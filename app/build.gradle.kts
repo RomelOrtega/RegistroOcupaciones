@@ -83,6 +83,11 @@ dependencies {
     testImplementation("app.cash.turbine:turbine:1.2.0")
     testImplementation(libs.junit)
 
+    //Adaptive
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite")
+    implementation("androidx.compose.material3.adaptive:adaptive-layout:1.1.0")
+    implementation("androidx.compose.material3.adaptive:adaptive-navigation:1.1.0")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
