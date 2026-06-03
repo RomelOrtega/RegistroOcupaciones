@@ -96,6 +96,8 @@ class HoraExtraEditViewModel @Inject constructor(
     }
 
     private fun onLoad(id: Int?) {
+        _state.value = HoraExtraEditUIState()
+        loadEmpleados()
         if (id == null || id == 0) {
             _state.update { it.copy(isNew = true, horaExtraId = null) }
             return
