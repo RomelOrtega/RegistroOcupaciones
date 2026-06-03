@@ -54,6 +54,7 @@ class EmpleadoEditViewModel @Inject constructor(
     }
 
     private fun onLoad(id: Int?) {
+        _state.value = EmpleadoEditUIState()
         if (id == null || id == 0) {
             _state.update { it.copy(isNew = true, empleadoId = null) }
             return

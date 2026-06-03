@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,47 +18,23 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmpleadoListScreen(
-    onDrawer: () -> Unit,
     goToEmpleado: (Int) -> Unit,
     createEmpleado: () -> Unit,
     viewModel: EmpleadoListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    EmpleadoListBody(
-        state = state,
-        onDrawer = onDrawer,
-        onEvent = { event ->
-            when (event) {
-                is EmpleadoListEvent.Edit -> goToEmpleado(event.id)
-                EmpleadoListEvent.CreateNew -> createEmpleado()
-                else -> viewModel.onEvent(event)
-            }
-        }
-    )
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun EmpleadoListBody(
-    state: EmpleadoListState,
-    onDrawer: () -> Unit,
-    onEvent: (EmpleadoListEvent) -> Unit
-) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Listado de Empleados") },
-                navigationIcon = {
-                    IconButton(onClick = onDrawer) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
-                    }
-                }
+                title = { Text("Listado de Empleados") }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onEvent(EmpleadoListEvent.CreateNew) }) {
+            FloatingActionButton(onClick = { createEmpleado() }) {
                 Text("+")
             }
         }
@@ -80,8 +55,8 @@ private fun EmpleadoListBody(
                 items(state.empleados) { empleado ->
                     EmpleadoCard(
                         empleado = empleado,
-                        onClick = { onEvent(EmpleadoListEvent.Edit(empleado.empleadoId)) },
-                        onDelete = { onEvent(EmpleadoListEvent.Delete(empleado.empleadoId)) }
+                        onClick = { goToEmpleado(empleado.empleadoId) },
+                        onDelete = { viewModel.onEvent(EmpleadoListEvent.Delete(empleado.empleadoId)) }
                     )
                 }
             }

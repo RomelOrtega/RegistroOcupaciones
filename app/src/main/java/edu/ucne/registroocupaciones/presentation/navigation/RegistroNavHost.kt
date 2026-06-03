@@ -1,84 +1,73 @@
 package edu.ucne.registroocupaciones.presentation.navigation
 
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
-import edu.ucne.registroocupaciones.presentation.Ocupaciones.edit.OcupacionEditScreen
-import edu.ucne.registroocupaciones.presentation.Ocupaciones.list.OcupacionListScreen
-import kotlinx.coroutines.launch
-import edu.ucne.registroocupaciones.presentation.empleado.edit.EmpleadoEditScreen
-import edu.ucne.registroocupaciones.presentation.empleado.list.EmpleadoListScreen
-import edu.ucne.registroocupaciones.presentation.horaextra.edit.HoraExtraEditScreen
-import edu.ucne.registroocupaciones.presentation.horaextra.list.HoraExtraListScreen
+import edu.ucne.registroocupaciones.presentation.empleado.EmpleadoAdaptiveScreen
+import edu.ucne.registroocupaciones.presentation.horaextra.HoraExtraAdaptiveScreen
+import edu.ucne.registroocupaciones.presentation.Ocupaciones.OcupacionAdaptiveScreen
 
+enum class NavItem(
+    val title: String,
+    val icon: ImageVector,
+    val startDestination: Screen
+) {
+    Ocupaciones("Ocupaciones", Icons.Default.Work, Screen.OcupacionList),
+    Empleados("Empleados", Icons.Default.People, Screen.EmpleadoList),
+    HorasExtras("Horas Extras", Icons.Default.AccessTime, Screen.HoraExtraList)
+}
 
 @Composable
 fun RegistroNavHost(
     navHostController: NavHostController
 ) {
-    val scope = rememberCoroutineScope()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    var selectedItem by remember { mutableStateOf(NavItem.Ocupaciones) }
 
-    DrawerMenu(
-        drawerState = drawerState,
-        navHostController = navHostController
+    NavigationSuiteScaffold(
+        navigationSuiteItems = {
+            NavItem.entries.forEach { navItem ->
+                item(
+                    selected = selectedItem == navItem,
+                    onClick = {
+                        selectedItem = navItem
+                        navHostController.navigate(navItem.startDestination) {
+                            launchSingleTop = true
+                            popUpTo(Screen.OcupacionList) { inclusive = false }
+                        }
+                    },
+                    icon = { Icon(navItem.icon, contentDescription = navItem.title) },
+                    label = { Text(navItem.title) }
+                )
+            }
+        }
     ) {
         NavHost(
             navController = navHostController,
             startDestination = Screen.OcupacionList
-        ) { composable<Screen.OcupacionList> {
-                OcupacionListScreen(
-                    onDrawer = { scope.launch { drawerState.open() } },
-                    goToOcupacion = { id -> navHostController.navigate(Screen.Ocupacion(id)) },
-                    createOcupacion = { navHostController.navigate(Screen.Ocupacion(0)) }
-                )
-            }
-
-            composable<Screen.Ocupacion> {
-                val args = it.toRoute<Screen.Ocupacion>()
-                OcupacionEditScreen(
-                    ocupacionId = args.ocupacionId,
-                    goBack = { navHostController.navigateUp() },
-                    onDrawer = { scope.launch { drawerState.open() } }
-                )
+        ) {
+            composable<Screen.OcupacionList> {
+                OcupacionAdaptiveScreen()
             }
 
             composable<Screen.EmpleadoList> {
-                EmpleadoListScreen(
-                    onDrawer = { scope.launch { drawerState.open() } },
-                    goToEmpleado = { id -> navHostController.navigate(Screen.Empleado(id)) },
-                    createEmpleado = { navHostController.navigate(Screen.Empleado(0)) }
-                )
+                EmpleadoAdaptiveScreen()
             }
 
-            composable<Screen.Empleado> {
-                val args = it.toRoute<Screen.Empleado>()
-                EmpleadoEditScreen(
-                    empleadoId = args.empleadoId,
-                    goBack = { navHostController.navigateUp() },
-                    onDrawer = { scope.launch { drawerState.open() } }
-                )
-            }
             composable<Screen.HoraExtraList> {
-                HoraExtraListScreen(
-                    onDrawer = { scope.launch { drawerState.open() } },
-                    goToHoraExtra = { id -> navHostController.navigate(Screen.HoraExtra(id)) },
-                    createHoraExtra = { navHostController.navigate(Screen.HoraExtra(0)) }
-                )
-            }
-
-            composable<Screen.HoraExtra> {
-                val args = it.toRoute<Screen.HoraExtra>()
-                HoraExtraEditScreen(
-                    horaExtraId = args.horaExtraId,
-                    goBack = { navHostController.navigateUp() },
-                    onDrawer = { scope.launch { drawerState.open() } }
-                )
+                HoraExtraAdaptiveScreen()
             }
         }
     }

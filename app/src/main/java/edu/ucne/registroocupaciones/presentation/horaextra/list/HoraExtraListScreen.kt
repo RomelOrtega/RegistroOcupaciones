@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,47 +21,21 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HoraExtraListScreen(
-    onDrawer: () -> Unit,
     goToHoraExtra: (Int) -> Unit,
     createHoraExtra: () -> Unit,
     viewModel: HoraExtraListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    HoraExtraListBody(
-        state = state,
-        onDrawer = onDrawer,
-        onEvent = { event ->
-            when (event) {
-                is HoraExtraListEvent.Edit -> goToHoraExtra(event.id)
-                HoraExtraListEvent.CreateNew -> createHoraExtra()
-                else -> viewModel.onEvent(event)
-            }
-        }
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun HoraExtraListBody(
-    state: HoraExtraListState,
-    onDrawer: () -> Unit,
-    onEvent: (HoraExtraListEvent) -> Unit
-) {
     val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Listado de Horas Extras") },
-                navigationIcon = {
-                    IconButton(onClick = onDrawer) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
-                    }
-                }
+                title = { Text("Listado de Horas Extras") }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onEvent(HoraExtraListEvent.CreateNew) }) {
+            FloatingActionButton(onClick = { createHoraExtra() }) {
                 Text("+")
             }
         }
@@ -85,8 +58,8 @@ private fun HoraExtraListBody(
                         horaExtra = horaExtra,
                         empleadoNombre = state.empleadoNombres[horaExtra.empleadoId] ?: "Desconocido",
                         dateFormatter = dateFormatter,
-                        onClick = { onEvent(HoraExtraListEvent.Edit(horaExtra.horaExtraId)) },
-                        onDelete = { onEvent(HoraExtraListEvent.Delete(horaExtra.horaExtraId)) }
+                        onClick = { goToHoraExtra(horaExtra.horaExtraId) },
+                        onDelete = { viewModel.onEvent(HoraExtraListEvent.Delete(horaExtra.horaExtraId)) }
                     )
                 }
             }

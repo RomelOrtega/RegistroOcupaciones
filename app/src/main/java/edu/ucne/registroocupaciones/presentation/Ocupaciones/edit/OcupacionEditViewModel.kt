@@ -64,6 +64,7 @@ class OcupacionEditViewModel @Inject constructor(
             OcupacionEditUIEvent.Delete -> onDelete()
         }
     } private fun onLoad(id: Int?) {
+        _state.value = OcupacionEditUIState()
         if (id == null || id == 0) {
             _state.update { it.copy(isNew = true, ocupacionId = null) }
             return
